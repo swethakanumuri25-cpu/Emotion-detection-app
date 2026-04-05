@@ -8,11 +8,9 @@ import av
 # Load model
 @st.cache_resource
 def load_model():
-    interpreter = tflite.Interpreter(model_path="emotion_model.tflite")
+    interpreter = tf.lite.Interpreter(model_path="emotion_model.tflite")
     interpreter.allocate_tensors()
     return interpreter
-
-interpreter = load_model()
 
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
