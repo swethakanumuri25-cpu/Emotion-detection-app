@@ -12,10 +12,10 @@ def load_model():
     interpreter.allocate_tensors()
     return interpreter
 
+interpreter = load_model()
+
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
-
-model = load_model()
 
 emotion_labels = ['Angry','Disgust','Fear','Happy','Neutral','Sad','Surprise']
 
