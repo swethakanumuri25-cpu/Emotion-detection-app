@@ -1,18 +1,21 @@
 import streamlit as st
 import cv2
 import numpy as np
-import tensorflow as tf
+import tflite_runtime.interpreter as tflite
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
 
 # Load model
 @st.cache_resource
 def load_model():
-    return tf.keras.models.load_model(
-        "Emotion_little_vgg.h5",
-        compile=False,
-        safe_mode=False
-    )
+    interpreter = tflite.Interpreter(model_path="emotion_model.tflite")
+    interpreter.allocate_tensors()
+    return interpreter
+
+interpreter = load_model()
+
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
 model = load_model()
 
@@ -40,7 +43,11 @@ class EmotionDetector(VideoTransformerBase):
             roi = np.expand_dims(roi, axis=-1)
             roi = np.expand_dims(roi, axis=0)
 
-            prediction = model.predict(roi, verbose=0)
+            interpreter.set_tensor(input_details[0]['index'], roi.astype('float32'))
+            interpreter.invoke()
+
+            prediction = interpreter.get_tensor(output_details[0]['index'])
+
             confidence = np.max(prediction) * 100
             label = emotion_labels[np.argmax(prediction)]
 
