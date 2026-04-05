@@ -3,4 +3,4 @@ opencv-python-headless
 numpy
 streamlit-webrtc
 av
-tflite-runtime
+tensorflow-cpu==2.13.0

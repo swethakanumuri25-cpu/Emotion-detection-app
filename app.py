@@ -1,7 +1,7 @@
 import streamlit as st
 import cv2
 import numpy as np
-import tflite_runtime.interpreter as tflite
+import tensorflow as tf
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
 
