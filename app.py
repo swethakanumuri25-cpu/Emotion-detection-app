@@ -1,0 +1,61 @@
+import streamlit as st
+import cv2
+import numpy as np
+import tensorflow as tf
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
+import av
+
+# Load model
+@st.cache_resource
+def load_model():
+    return tf.keras.models.load_model(
+        "Emotion_little_vgg.h5",
+        compile=False,
+        safe_mode=False
+    )
+
+model = load_model()
+
+emotion_labels = ['Angry','Disgust','Fear','Happy','Neutral','Sad','Surprise']
+
+face_classifier = cv2.CascadeClassifier(
+    cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+)
+
+st.title("😊 Live Emotion Detection")
+
+# REAL-TIME PROCESSING CLASS
+class EmotionDetector(VideoTransformerBase):
+    def transform(self, frame):
+        img = frame.to_ndarray(format="bgr24")
+
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = face_classifier.detectMultiScale(gray, 1.3, 5)
+
+        for (x, y, w, h) in faces:
+            roi_gray = gray[y:y+h, x:x+w]
+            roi_gray = cv2.resize(roi_gray, (48,48))
+
+            roi = roi_gray.astype('float32') / 255.0
+            roi = np.expand_dims(roi, axis=-1)
+            roi = np.expand_dims(roi, axis=0)
+
+            prediction = model.predict(roi, verbose=0)
+            confidence = np.max(prediction) * 100
+            label = emotion_labels[np.argmax(prediction)]
+
+            text = f"{label} ({confidence:.1f}%)"
+
+            cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,255), 2)
+            cv2.putText(img, text, (x,y-10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,0), 2)
+
+        return img
+
+# START STREAM
+webrtc_streamer(
+    key="emotion",
+    video_transformer_factory=EmotionDetector,
+    media_stream_constraints={"video": True, "audio": False},
+    async_processing=True
+)
