@@ -3,11 +3,22 @@ FROM python:3.10-slim
 WORKDIR /app
 COPY . .
 
+# ✅ Install ALL required system dependencies (FIX)
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     libsm6 \
     libxext6 \
     libgl1 \
+    gcc \
+    g++ \
+    libavformat-dev \
+    libavcodec-dev \
+    libavdevice-dev \
+    libavutil-dev \
+    libavfilter-dev \
+    libswscale-dev \
+    libswresample-dev \
+    pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip
