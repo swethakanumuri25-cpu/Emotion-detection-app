@@ -41,7 +41,17 @@ webrtc_streamer(
     key="emotion",
     video_transformer_factory=EmotionDetector,
     rtc_configuration={
-        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+        "iceServers": [
+            {"urls": ["stun:stun.l.google.com:19302"]},
+            {
+                "urls": [
+                    "turn:openrelay.metered.ca:80",
+                    "turn:openrelay.metered.ca:443"
+                ],
+                "username": "openrelayproject",
+                "credential": "openrelayproject"
+            }
+        ]
     },
     media_stream_constraints={"video": True, "audio": False},
     async_processing=True
