@@ -46,10 +46,8 @@ class EmotionDetector(VideoTransformerBase):
 
             prediction = interpreter.get_tensor(output_details[0]['index'])
 
-            confidence = np.max(prediction) * 100
             label = emotion_labels[np.argmax(prediction)]
-
-            text = f"{label} ({confidence:.1f}%)"
+            text = label
 
             cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,255), 2)
             cv2.putText(img, text, (x,y-10),
