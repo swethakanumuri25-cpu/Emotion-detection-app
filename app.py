@@ -1,7 +1,7 @@
 import streamlit as st
 import cv2
 import numpy as np
-import tensorflow as tf
+import tflite_runtime.interpreter as tf
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
 
@@ -59,6 +59,11 @@ class EmotionDetector(VideoTransformerBase):
 webrtc_streamer(
     key="emotion",
     video_transformer_factory=EmotionDetector,
+    rtc_configuration={
+        "iceServers": [
+            {"urls": ["stun:stun.l.google.com:19302"]}
+        ]
+    },
     media_stream_constraints={"video": True, "audio": False},
     async_processing=True
 )
