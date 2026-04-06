@@ -1,14 +1,14 @@
 import streamlit as st
 import cv2
 import numpy as np
-from tflite_runtime.interpreter import Interpreter
+import tensorflow as tf
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 
 
 # Load model
 @st.cache_resource
 def load_model():
-    interpreter = Interpreter(model_path="emotion_model.tflite")
+    interpreter = tf.lite.Interpreter(model_path="emotion_model.tflite")
     interpreter.allocate_tensors()
     return interpreter
 
