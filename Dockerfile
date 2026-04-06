@@ -7,7 +7,7 @@ RUN pip install \
     numpy==1.23.5 \
     tflite-runtime \
     streamlit-webrtc==0.47.1 \
-    --no-deps
+    aiortc
 
 # Install required dependencies manually (excluding av)
 RUN pip install \

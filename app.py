@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 from tflite_runtime.interpreter import Interpreter
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
-import av
+
 
 # Load model
 @st.cache_resource
