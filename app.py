@@ -1,14 +1,14 @@
 import streamlit as st
 import cv2
 import numpy as np
-import tflite_runtime.interpreter as tf
+from tflite_runtime.interpreter import Interpreter
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import av
 
 # Load model
 @st.cache_resource
 def load_model():
-    interpreter = tf.lite.Interpreter(model_path="emotion_model.tflite")
+    interpreter = Interpreter(model_path="emotion_model.tflite")
     interpreter.allocate_tensors()
     return interpreter
 
@@ -47,10 +47,9 @@ class EmotionDetector(VideoTransformerBase):
             prediction = interpreter.get_tensor(output_details[0]['index'])
 
             label = emotion_labels[np.argmax(prediction)]
-            text = label
 
             cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,255), 2)
-            cv2.putText(img, text, (x,y-10),
+            cv2.putText(img, label, (x,y-10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,0), 2)
 
         return img
@@ -60,9 +59,7 @@ webrtc_streamer(
     key="emotion",
     video_transformer_factory=EmotionDetector,
     rtc_configuration={
-        "iceServers": [
-            {"urls": ["stun:stun.l.google.com:19302"]}
-        ]
+        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
     },
     media_stream_constraints={"video": True, "audio": False},
     async_processing=True
